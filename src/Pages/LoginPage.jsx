@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../api/authApi";
+import { getMe } from "../api/userApi";
 
 function LoginPage({ onLoginSuccess }) {
     const [email, setEmail] = useState("");
@@ -15,9 +16,10 @@ function LoginPage({ onLoginSuccess }) {
                 password
             });
             localStorage.setItem("accessToken", res.data.accessToken);
-            onLoginSuccess();
+
+            const meRes = await getMe();
+            onLoginSuccess(meRes.data);
         } catch(error) { 
-            console.log(error);
             alert("로그인 실패");
         } finally {
             setIsSubmitting(false);
