@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { login } from "../api/authApi";
 
-function LoginPage() {
+function LoginPage({ onLoginSuccess }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,9 +15,10 @@ function LoginPage() {
                 password
             });
             localStorage.setItem("accessToken", res.data.accessToken);
-            alert("로그인 성공");
-        } catch { 
-            alert("로그인 실패"); 
+            onLoginSuccess();
+        } catch(error) { 
+            console.log(error);
+            alert("로그인 실패");
         } finally {
             setIsSubmitting(false);
         }
