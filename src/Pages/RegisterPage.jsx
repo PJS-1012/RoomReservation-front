@@ -1,34 +1,33 @@
 import { useState } from "react";
-import { login } from "../api/authApi";
-import { getMe } from "../api/userApi";
+import { register } from "../api/userApi";
 
-function LoginPage({ onLoginSuccess, onShowRegister }) {
+function RegisterPage({ onRegisterSuccess, onShowLogin }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            const res = await login({
-                email,
-                password
-            });
-            localStorage.setItem("accessToken", res.data.accessToken);
+        setIsSubmitting(true);  
 
-            const meRes = await getMe();
-            onLoginSuccess(meRes.data);
-        } catch { 
-            alert("로그인 실패");
+        try {
+            await register({
+                email,
+                password,
+                name
+            });
+            alert("회원가입 성공");
+            onRegisterSuccess();
+        } catch {
+            alert("회원가입 실패");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <form className="container mt-5" onSubmit={handleLogin}>
-            <h2>로그인</h2>
+        <form className="container mt-5" onSubmit={handleRegister}>
             <input
                 className="form-control mb-2"
                 placeholder="이메일"
@@ -42,14 +41,21 @@ function LoginPage({ onLoginSuccess, onShowRegister }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            <input
+                className="form-control mb-2"
+                placeholder="이름"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
             <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "로그인 중..." : "로그인"}
+                {isSubmitting ? "회원가입 중..." : "회원가입"}
             </button>
-            <button className="btn btn-link" type="button" onClick={onShowRegister}>
-                회원가입
+            <button className="btn btn-link" type="button" onClick={onShowLogin}>
+                로그인으로 돌아가기
             </button>
+
         </form>
     );
 }
 
-export default LoginPage;
+export default RegisterPage;

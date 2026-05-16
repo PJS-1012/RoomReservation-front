@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMe } from "./api/userApi";
 import LoginPage from "./Pages/LoginPage";
+import RegisterPage from "./Pages/RegisterPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -11,6 +12,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(
     Boolean(localStorage.getItem("accessToken"))
   );
+
+  const [authPage, setAuthPage] = useState("login");
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -59,9 +62,24 @@ function App() {
       </div>
     );
   }
-  return <LoginPage onLoginSuccess={(userData) => {
+
+  if (authPage === "register") {
+    return (
+      <RegisterPage
+        onRegisterSuccess={() => setAuthPage("login")}
+        onShowLogin={() => setAuthPage("login")}
+      />
+    );
+  }
+
+  return (
+  <LoginPage onLoginSuccess={(userData) => {
     setUser(userData);
     setIsLoggedIn(true);
-  }} />;
+  }}
+    onShowRegister={() => setAuthPage("register")}
+  />
+);
 }
+
 export default App;
