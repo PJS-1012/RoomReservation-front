@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getMe } from "./api/userApi";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
+import RoomListPage from "./Pages/RoomListPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -59,6 +60,8 @@ function App() {
         >
           로그아웃
         </button>
+
+        <RoomListPage />
       </div>
     );
   }
