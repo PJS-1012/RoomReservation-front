@@ -3,6 +3,7 @@ import { getMe } from "./api/userApi";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
 import RoomListPage from "./Pages/RoomListPage";
+import AdminRoomCreatePage from "./Pages/AdminRoomCreatePage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -62,6 +63,13 @@ function App() {
         </button>
 
         <RoomListPage />
+
+        {user?.admin && (
+          <AdminRoomCreatePage onRoomCreated={() => {
+            alert("회의실 목록을 새로고침하려면 수동으로 페이지를 새로고침 하세요.")
+          }}
+          />
+        )}
       </div>
     );
   }
@@ -76,13 +84,13 @@ function App() {
   }
 
   return (
-  <LoginPage onLoginSuccess={(userData) => {
-    setUser(userData);
-    setIsLoggedIn(true);
-  }}
-    onShowRegister={() => setAuthPage("register")}
-  />
-);
+    <LoginPage onLoginSuccess={(userData) => {
+      setUser(userData);
+      setIsLoggedIn(true);
+    }}
+      onShowRegister={() => setAuthPage("register")}
+    />
+  );
 }
 
 export default App;
