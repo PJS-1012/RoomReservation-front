@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { getRooms } from "../api/roomApi";
+import { createReservation } from "../api/reservationApi";
 
 function RoomListPage({ refreshKey }) {
     const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [startAt, setStartAt] = useState("");
+    const [endAt, setEndAt] = useState("");
+    const [isReservationSubmitting, setIsReservationSubmitting] = useState(false);
 
     useEffect(() => {
         getRooms().then((res) => {
@@ -17,6 +21,33 @@ function RoomListPage({ refreshKey }) {
                 setIsLoading(false);
             });
     }, [refreshKey]);
+
+    const handleCreateReservation = async (e) => {
+        e.preventDefault();
+
+        if (!selectedRoom) {
+            return;
+        }
+
+        setIsReservationSubmitting(true);
+
+        try {
+            await createReservation({
+                roomId: selectedRoom.id,
+                startAt,
+                endAt
+            });
+
+            alert("예약 성공");
+            setSelectedRoom(null);
+            setStartAt("");
+            setEndAt("");
+        } catch {
+            alert("예약 실패");
+        } finally {
+            setIsReservationSubmitting(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -50,9 +81,33 @@ function RoomListPage({ refreshKey }) {
                 </ul>
             )}
             {selectedRoom && (
-                <div className="alert alert-info mt-3">
-                    선택한 회의실: {selectedRoom.name}
-                </div>
+                <form className="alert alert-info mt-3" onSubmit={handleCreateReservation}>
+                    <h3>{selectedRoom.name} 예약하기</h3>
+
+                    <label className="form-label">시작 시간</label>
+                    <input
+                        className="form-control mb-2"
+                        type="datetime-local"
+                        value={startAt}
+                        onChange={(e) => setStartAt(e.target.value)}
+                    />
+
+                    <label className="form-label">종료 시간</label>
+                    <input
+                        className="form-control mb-2"
+                        type="datetime-local"
+                        value={endAt}
+                        onChange={(e) => setEndAt(e.target.value)}  
+                    />
+
+                            <button
+                                className="btn btn-primary"
+                                type="submit"
+                                disabled={isReservationSubmitting}
+                            >
+                                {isReservationSubmitting ? "예약중" : "예약하기"}
+                            </button>
+                    </form>
             )}
         </div>
     )
