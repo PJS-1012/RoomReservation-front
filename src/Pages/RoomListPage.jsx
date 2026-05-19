@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRooms } from "../api/roomApi";
 
-function RoomListPage() {
+function RoomListPage({ refreshKey }) {
     const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
@@ -16,7 +16,7 @@ function RoomListPage() {
             .finally(() => {
                 setIsLoading(false);
             });
-    }, []);
+    }, [refreshKey]);
 
     if (isLoading) {
         return (

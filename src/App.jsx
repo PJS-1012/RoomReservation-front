@@ -17,6 +17,8 @@ function App() {
 
   const [authPage, setAuthPage] = useState("login");
 
+  const [roomRefreshKey, setRoomRefreshKey] = useState(0);
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
@@ -62,11 +64,11 @@ function App() {
           로그아웃
         </button>
 
-        <RoomListPage />
+        <RoomListPage refreshkey={roomRefreshKey} />
 
         {user?.admin && (
           <AdminRoomCreatePage onRoomCreated={() => {
-            alert("회의실 목록을 새로고침하려면 수동으로 페이지를 새로고침 하세요.")
+            setRoomRefreshKey((prev) => prev + 1);
           }}
           />
         )}
