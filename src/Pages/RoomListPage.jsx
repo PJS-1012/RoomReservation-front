@@ -29,6 +29,31 @@ function RoomListPage({ refreshKey, onReservationCreated }) {
             return;
         }
 
+        if (!startAt || !endAt) {
+            alert("시작 시간과 종료 시간을 입력하세요.");
+            return;
+        }
+
+        const start = new Date(startAt);
+        const end = new Date(endAt);
+        const now = new Date();
+        const durationMinutes = (end - start) / 1000 / 60;
+
+        if (start < now) {
+            alert("지난 시간은 예약할 수 없습니다.");
+            return;
+        }
+
+        if (durationMinutes < 30) {
+            alert("예약은 최소 30분 이상이어야 합니다.");
+            return;
+        }
+
+        if (durationMinutes > 240) {
+            alert("예약은 최대 4시간까지 가능합니다.");
+            return;
+        }
+
         setIsReservationSubmitting(true);
 
         try {
@@ -98,17 +123,17 @@ function RoomListPage({ refreshKey, onReservationCreated }) {
                         className="form-control mb-2"
                         type="datetime-local"
                         value={endAt}
-                        onChange={(e) => setEndAt(e.target.value)}  
+                        onChange={(e) => setEndAt(e.target.value)}
                     />
 
-                            <button
-                                className="btn btn-primary"
-                                type="submit"
-                                disabled={isReservationSubmitting}
-                            >
-                                {isReservationSubmitting ? "예약중" : "예약하기"}
-                            </button>
-                    </form>
+                    <button
+                        className="btn btn-primary"
+                        type="submit"
+                        disabled={isReservationSubmitting}
+                    >
+                        {isReservationSubmitting ? "예약중" : "예약하기"}
+                    </button>
+                </form>
             )}
         </div>
     )
