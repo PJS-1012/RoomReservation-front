@@ -7,3 +7,7 @@ export const createReservation = ({ roomId, startAt, endAt }) => {
         endAt
     });
 };
+
+export const getMyReservations = () => {
+    return axios.get("/reservations");
+}

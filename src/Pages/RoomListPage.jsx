@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getRooms } from "../api/roomApi";
 import { createReservation } from "../api/reservationApi";
 
-function RoomListPage({ refreshKey }) {
+function RoomListPage({ refreshKey, onReservationCreated }) {
     const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
@@ -42,6 +42,7 @@ function RoomListPage({ refreshKey }) {
             setSelectedRoom(null);
             setStartAt("");
             setEndAt("");
+            onReservationCreated();
         } catch {
             alert("예약 실패");
         } finally {

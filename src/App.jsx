@@ -4,6 +4,7 @@ import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
 import RoomListPage from "./Pages/RoomListPage";
 import AdminRoomCreatePage from "./Pages/AdminRoomCreatePage";
+import MyReservationsPage  from "./Pages/MyReservationsPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -18,6 +19,7 @@ function App() {
   const [authPage, setAuthPage] = useState("login");
 
   const [roomRefreshKey, setRoomRefreshKey] = useState(0);
+  const [reservationRefreshKey, setReservationRefreshKey] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -64,7 +66,13 @@ function App() {
           로그아웃
         </button>
 
-        <RoomListPage refreshkey={roomRefreshKey} />
+        <RoomListPage refreshKey={roomRefreshKey}
+          onReservationCreated={() => {
+            setReservationRefreshKey((prev) => prev + 1);
+          }}
+        />
+
+        <MyReservationsPage refreshKey={reservationRefreshKey} />
 
         {user?.admin && (
           <AdminRoomCreatePage onRoomCreated={() => {
