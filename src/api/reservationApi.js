@@ -11,3 +11,7 @@ export const createReservation = ({ roomId, startAt, endAt }) => {
 export const getMyReservations = () => {
     return axios.get("/reservations");
 }
+
+export const cancelReservation = (reservationId) => {
+    return axios.delete(`/reservations/${reservationId}`);
+}
