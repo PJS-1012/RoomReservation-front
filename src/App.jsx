@@ -67,8 +67,12 @@ function App() {
         </button>
 
         <RoomListPage refreshKey={roomRefreshKey}
+          isAdmin={user?.admin}
           onReservationCreated={() => {
             setReservationRefreshKey((prev) => prev + 1);
+          }}
+          onRoomChange={() => {
+            setRoomRefreshKey((prev) => prev + 1);
           }}
         />
 

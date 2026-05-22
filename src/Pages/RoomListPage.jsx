@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getRooms } from "../api/roomApi";
 import { createReservation } from "../api/reservationApi";
+import { deactivateRoom } from "../api/adminApi";
 
-function RoomListPage({ refreshKey, onReservationCreated }) {
+function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange }) {
     const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
@@ -75,6 +76,20 @@ function RoomListPage({ refreshKey, onReservationCreated }) {
         }
     };
 
+    const handleDeactivateRoom = async (roomId) => {
+        if (!confirm("해당 회의실을 비활성화 하겠습니까?")) {
+            return;
+        }
+
+        try {
+            await deactivateRoom(roomId);
+            alert("회의실이 비활성화되었습니다.");
+            onRoomChange();
+        } catch {
+            alert("회의실 비활성화 실패");
+        }
+    }
+
     if (isLoading) {
         return (
             <div className="container mt-5">
@@ -102,6 +117,14 @@ function RoomListPage({ refreshKey, onReservationCreated }) {
                                 onClick={() => setSelectedRoom(room)}>
                                 예약하기
                             </button>
+                            {isAdmin && (
+                                <button
+                                    className="btn btn-danger mt-2 ms-2"
+                                    type="button"
+                                    onClick={() => handleDeactivateRoom(room.id)}>
+                                    비활성화
+                                </button>
+                            )}
                         </li>
                     ))}
                 </ul>

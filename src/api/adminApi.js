@@ -7,3 +7,7 @@ export const createRoom = ({ name, location, capacity }) => {
         capacity
     });
 }
+
+export const deactivateRoom = (roomId) => {
+    return axios.delete(`/admin/${roomId}`);
+}
