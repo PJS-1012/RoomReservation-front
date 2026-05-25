@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getRooms } from "../api/roomApi";
 import { createReservation } from "../api/reservationApi";
-import { deactivateRoom } from "../api/adminApi";
+import { deactivateRoom, updateRoom } from "../api/adminApi";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange }) {
     const [rooms, setRooms] = useState([]);
@@ -10,13 +11,18 @@ function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange 
     const [startAt, setStartAt] = useState("");
     const [endAt, setEndAt] = useState("");
     const [isReservationSubmitting, setIsReservationSubmitting] = useState(false);
+    const [updatingRoomId, setUpdatingRoomId] = useState(null);
+    const [updateName, setUpdateName] = useState("");
+    const [updateLocation, setUpdateLocation] = useState("");
+    const [updateCapacity, setUpdateCapacity] = useState("");
+    const [isUpdateSubmitting, setIsUpdateSubmitting] = useState(false);
 
     useEffect(() => {
         getRooms().then((res) => {
             setRooms(res.data);
         })
-            .catch(() => {
-                alert("회의실 목록을 불러오지 못했습니다.");
+            .catch((error) => {
+                alert(getApiErrorMessage(error, "회의실 목록을 불러오지 못했습니다."));
             })
             .finally(() => {
                 setIsLoading(false);
@@ -69,8 +75,8 @@ function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange 
             setStartAt("");
             setEndAt("");
             onReservationCreated();
-        } catch {
-            alert("예약 실패");
+        } catch (error) {
+            alert(getApiErrorMessage(error, "예약 실패"));
         } finally {
             setIsReservationSubmitting(false);
         }
@@ -85,10 +91,44 @@ function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange 
             await deactivateRoom(roomId);
             alert("회의실이 비활성화되었습니다.");
             onRoomChange();
-        } catch {
-            alert("회의실 비활성화 실패");
+        } catch (error) {
+            alert(getApiErrorMessage(error, "회의실 비활성화 실패"));
         }
-    }
+    };
+
+    const handleStartUpdateRoom = (room) => {
+        setUpdatingRoomId(room.id);
+        setUpdateName(room.name);
+        setUpdateLocation(room.location);
+        setUpdateCapacity(String(room.capacity));
+
+    };
+
+    const handleUpdateRoom = async (e) => {
+        e.preventDefault();
+
+        setIsUpdateSubmitting(true);
+
+        try {
+            await updateRoom(updatingRoomId, {
+                name: updateName,
+                location: updateLocation,
+                capacity: Number(updateCapacity)
+            });
+
+            alert("회의실 정보가 수정되었습니다.");
+            setUpdatingRoomId(null);
+            setUpdateName("");
+            setUpdateLocation("");
+            setUpdateCapacity("");
+            onRoomChange();
+        } catch (error) {
+            alert(getApiErrorMessage(error, "회의실 정보 수정 실패"));
+
+        } finally {
+            setIsUpdateSubmitting(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -118,17 +158,69 @@ function RoomListPage({ refreshKey, onReservationCreated, isAdmin, onRoomChange 
                                 예약하기
                             </button>
                             {isAdmin && (
-                                <button
-                                    className="btn btn-danger mt-2 ms-2"
-                                    type="button"
-                                    onClick={() => handleDeactivateRoom(room.id)}>
-                                    비활성화
-                                </button>
+                                <>
+                                    <button
+                                        className="btn btn-danger mt-2 ms-2"
+                                        type="button"
+                                        onClick={() => handleDeactivateRoom(room.id)}>
+                                        비활성화
+                                    </button>
+
+                                    <button
+                                        className="btn btn-warning mt-2 ms-2"
+                                        type="button"
+                                        onClick={() => handleStartUpdateRoom(room)}>
+                                        수정
+                                    </button>
+                                </>
                             )}
                         </li>
                     ))}
                 </ul>
             )}
+            {updatingRoomId && (
+                <form className="alert alert-warning mt-3" onSubmit={handleUpdateRoom}>
+                    <h3>회의실 정보 수정</h3>
+
+                    <input
+                        className="form-control mb-2"
+                        placeholder="회의실 이름"
+                        value={updateName}
+                        onChange={(e) => setUpdateName(e.target.value)}
+                    />
+
+                    <input
+                        className="form-control mb-2"
+                        placeholder="회의실 위치"
+                        value={updateLocation}
+                        onChange={(e) => setUpdateLocation(e.target.value)}
+                    />
+
+                    <input
+                        className="form-control mb-2"
+                        type="number"
+                        placeholder="회의실 수용 인원"
+                        value={updateCapacity}
+                        onChange={(e) => setUpdateCapacity(e.target.value)}
+                    />
+
+                    <button
+                        className="btn btn-warning"
+                        type="submit"
+                        disabled={isUpdateSubmitting}
+                    >
+                        {isUpdateSubmitting ? "수정중..." : "수정하기"}
+                    </button>
+
+                    <button
+                        className="btn btn-secondary ms-2"
+                        type="button"
+                        onClick={() => setUpdatingRoomId(null)}
+                    >
+                        취소
+                    </button>
+                </form>)}
+
             {selectedRoom && (
                 <form className="alert alert-info mt-3" onSubmit={handleCreateReservation}>
                     <h3>{selectedRoom.name} 예약하기</h3>

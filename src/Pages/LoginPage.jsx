@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login } from "../api/authApi";
 import { getMe } from "../api/userApi";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 function LoginPage({ onLoginSuccess, onShowRegister }) {
     const [email, setEmail] = useState("");
@@ -19,8 +20,8 @@ function LoginPage({ onLoginSuccess, onShowRegister }) {
 
             const meRes = await getMe();
             onLoginSuccess(meRes.data);
-        } catch { 
-            alert("로그인 실패");
+        } catch (error) { 
+            alert(getApiErrorMessage(error, "로그인 실패"));
         } finally {
             setIsSubmitting(false);
         }

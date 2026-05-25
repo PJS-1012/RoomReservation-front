@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { register } from "../api/userApi";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 function RegisterPage({ onRegisterSuccess, onShowLogin }) {
     const [email, setEmail] = useState("");
@@ -19,8 +20,8 @@ function RegisterPage({ onRegisterSuccess, onShowLogin }) {
             });
             alert("회원가입 성공");
             onRegisterSuccess();
-        } catch {
-            alert("회원가입 실패");
+        } catch (error) {
+            alert(getApiErrorMessage(error, "회원가입 실패"));
         } finally {
             setIsSubmitting(false);
         }

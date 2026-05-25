@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyReservations, cancelReservation } from "../api/reservationApi";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 function MyReservationsPage({ refreshKey }) {
     const [reservations, setReservations] = useState([]);
@@ -9,8 +10,8 @@ function MyReservationsPage({ refreshKey }) {
         getMyReservations().then((res) => {
             setReservations(res.data);
         })
-            .catch(() => {
-                alert("내 예약 목록을 불러오지 못했습니다.");
+            .catch((error) => {
+                alert(getApiErrorMessage(error, "내 예약 목록을 불러오지 못했습니다."));
             })
             .finally(() => {
                 setIsLoading(false);
@@ -29,8 +30,8 @@ function MyReservationsPage({ refreshKey }) {
                     reservation.id === reservationId
                         ? { ...reservation, canceled: true }
                         : reservation));
-        } catch {
-            alert("예약 취소 실패");
+        } catch (error) {
+            alert(getApiErrorMessage(error, "예약 취소 실패"));
         }
     };
 

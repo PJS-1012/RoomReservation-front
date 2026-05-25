@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createRoom } from "../api/adminApi";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 function AdminRoomCreatePage( { onRoomCreated }) {
     const [name, setName] = useState("");
@@ -23,8 +24,8 @@ function AdminRoomCreatePage( { onRoomCreated }) {
             setLocation("");
             setCapacity("");
             onRoomCreated();
-        } catch {
-            alert("회의실 생성 실패");
+        } catch (error) {
+            alert(getApiErrorMessage(error, "회의실 생성 실패"));
         } finally {
             setIsSubmitting(false);
         }
