@@ -14,4 +14,18 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
+instance.interceptors.response.use(
+  (res) => {
+    return res;
+  }, (error) => {
+    if(error.response?.status === 401) {
+      localStorage.removeItem("accessToken");
+      window.location.reload();
+    }
+
+    return Promise.reject(error);
+  }
+
+)
+
 export default instance;
